@@ -146,7 +146,7 @@ namespace Chess
                 case "Queen":
                     if (targetX == pieceToMove.x || targetY == pieceToMove.y) //check if moving straight
                     {
-                        if (DoesCollisionExistStraight(pieceToMove.x, pieceToMove.y, targetX, targetY, MoveOffset) == false)
+                        if (CanAttackStraight(pieceToMove.x, pieceToMove.y, targetX, targetY, MoveOffset) == false)
                         {
                             return true;
                         }
@@ -155,16 +155,16 @@ namespace Chess
                 case "Rook":
                     if (targetX == pieceToMove.x || targetY == pieceToMove.y) //check if moving straight
                     {
-                        if (DoesCollisionExistStraight(pieceToMove.x, pieceToMove.y, targetX, targetY, MoveOffset) == false)
+                        if (CanAttackStraight(pieceToMove.x, pieceToMove.y, targetX, targetY, MoveOffset) == false)
                         {
                             return true;
                         }
                     }
                     break;
                 case "Bishop":
-                    if (true) //check if moving diagonally
+                    if (true)
                     {
-                        if (DoesCollisionExistDiagonal(pieceToMove.x, pieceToMove.y, targetX, targetY, MoveOffset) == false)
+                        if (CanAttackDiagonal(pieceToMove.x, pieceToMove.y, targetX, targetY, MoveOffset) == false)
                         {
                             return true;
                         }
@@ -202,16 +202,16 @@ namespace Chess
             return false;
         }
 
-        static bool DoesCollisionExistDiagonal(int originX, int originY, int targetX, int targetY, int MoveOffset)
+        static bool CanAttackDiagonal(int originX, int originY, int targetX, int targetY, int MoveOffset)
         {
             bool collisionFound = false;
+
             bool goingDown = targetX > originX;
             bool goingRight = targetY > originY;
+
             int xStep = -1;
             int yStep = -1;
             int targetSteps = 0;
-
-            Console.WriteLine(goingDown + "," + goingRight);
 
             if (goingRight)
             {
@@ -225,39 +225,25 @@ namespace Chess
             targetSteps = Math.Abs(originX - targetX) - 1;  // take 1 away from target steps so we don't check the square we're taking - 
                                                             //this will be checked higher up for enemy/friend
 
-            for (int i = 0; i != targetSteps; i++)
+            try
             {
-                Console.WriteLine("Checking for collision");
-                Console.ReadLine();
-                if (ChessBoard[i * xStep, i * yStep].PieceInCell != null)
+                for (int i = 1; i != targetSteps; i++)
                 {
-                    collisionFound = true;
-                    Console.WriteLine("Collision found");
+                    if (ChessBoard[originX + (i * xStep), originY + (i * yStep)].PieceInCell != null)
+                    {
+                        collisionFound = true;
+                    }
                 }
             }
+            catch
+            {
+                collisionFound = true;
+            }
 
-
-                //MoveOffset = Math.Sign(targetX - originX) * 1;
-                //for (int i = originX + MoveOffset; i != targetX; i += MoveOffset)
-                //{
-                //    if (ChessBoard[i, targetY].PieceInCell != null)
-                //    {
-                //        collisionFound = true;
-                //    }
-                //}
-                //MoveOffset = Math.Sign(targetY - originY) * 1;
-                //for (int i = originY + MoveOffset; i != targetY; i += MoveOffset)
-                //{
-                //    if (ChessBoard[targetX, i].PieceInCell != null)
-                //    {
-                //        collisionFound = true;
-                //    }
-
-                Console.ReadLine();
             return collisionFound;
         }
 
-        static bool DoesCollisionExistStraight(int originX, int originY, int targetX, int targetY, int MoveOffset)
+        static bool CanAttackStraight(int originX, int originY, int targetX, int targetY, int MoveOffset)
         {
             bool collisionFound = false;
 
